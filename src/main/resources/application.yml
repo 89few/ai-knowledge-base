@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-knowledge-base
+  mvc:
+    async:
+      request-timeout: 300000
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ai_kb}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:0}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+llm:
+  openrouter:
+    api-key: ${OPENROUTER_API_KEY}
+    base-url: https://openrouter.ai/api/v1
+    model: ${OPENROUTER_MODEL:z-ai/glm-4.5-air}
+
+embedding:
+  ollama:
+    base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+    model: ${OLLAMA_EMBEDDING_MODEL:nomic-embed-text}
+ocr:
+  tesseract:
+    data-path: ${TESSERACT_DATA_PATH:C:/Program Files/Tesseract-OCR/tessdata}
+    language: ${TESSERACT_LANGUAGE:chi_sim+eng}
+
+upload:
+  chunk-size: 800
+  chunk-overlap: 100
+
+web-search:
+  tavily:
+    api-key: ${TAVILY_API_KEY:}
+    base-url: https://api.tavily.com
+    max-results: 20
