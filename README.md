@@ -59,7 +59,7 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ai-knowledge-base.git
+git clone https://github.com/89few/ai-knowledge-base.git
 cd ai-knowledge-base
 ```
 
