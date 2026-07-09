@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>企业知识库智能问答系统</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .auth-page {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #102a43, #1f5d8c);
+        }
+
+        .auth-card {
+            width: 420px;
+            background: white;
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+        }
+
+        .auth-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #102a43;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        .auth-tab.active {
+            background: white;
+            color: #1f5d8c;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 10px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            border-color: #1f5d8c;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #1f5d8c;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .auth-btn:hover {
+            background: #17496f;
+        }
+
+        .auth-error {
+            color: #d9304f;
+            font-size: 13px;
+            margin-top: 12px;
+            min-height: 18px;
+            line-height: 1.5;
+        }
+
+        .page {
+            display: none;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #102a43;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 22px 16px;
+            flex-shrink: 0;
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            margin: 0 0 6px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #bcccdc;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .user-box {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .user-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 4px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            margin-top: 14px;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
+            background: #ef476f;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .logout-btn:hover {
+            background: #d93b62;
+        }
+
+        .new-chat-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: #1f5d8c;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .new-chat-btn:hover {
+            background: #17496f;
+        }
+
+        .history-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: #f0f4f8;
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .session-item {
+            padding: 11px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .session-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .session-item.active {
+            border-color: #9fb3c8;
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .session-title {
+            font-size: 13px;
+            color: white;
+            padding-right: 24px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .session-meta {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #bcccdc;
+        }
+
+        .delete-session {
+            position: absolute;
+            right: 7px;
+            top: 8px;
+            border: none;
+            background: transparent;
+            color: #bcccdc;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .delete-session:hover {
+            color: #ffb3c1;
+        }
+
+        .empty-history {
+            color: #bcccdc;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 10px;
+        }
+
+        .sidebar-footer {
+            font-size: 11px;
+            color: #9fb3c8;
+            line-height: 1.6;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            margin-top: 12px;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: #f6f8fc;
+        }
+
+        .header {
+            height: 64px;
+            background: rgba(255, 255, 255, 0.92);
+            border-bottom: 1px solid #e5e8ef;
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #102a43;
+        }
+
+        .header-desc {
+            margin-left: 14px;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 8vw 28px 8vw;
+        }
+
+        .message-row {
+            display: flex;
+            margin-bottom: 18px;
+        }
+
+        .message-row.user {
+            justify-content: flex-end;
+        }
+
+        .message-row.assistant {
+            justify-content: flex-start;
+        }
+
+        .message {
+            max-width: 78%;
+            padding: 14px 16px;
+            border-radius: 16px;
+            line-height: 1.7;
+            font-size: 15px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .message.user {
+            background: #1f5d8c;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.assistant {
+            background: white;
+            color: #222;
+            border: 1px solid #e5e8ef;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+        }
+
+        .source-toggle {
+            width: 100%;
+            border: none;
+            background: #eef4fb;
+            color: #1f5d8c;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 8px;
+            text-align: left;
+            margin-top: 12px;
+        }
+
+        .source-toggle:hover {
+            background: #e1edf8;
+        }
+
+        .source-box {
+            display: none;
+            margin-top: 8px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-left: 3px solid #1f5d8c;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .source-box.expanded {
+            display: block;
+        }
+
+        .source-content {
+            max-height: 160px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .source-content:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .source-link {
+            display: inline-block;
+            color: #1f5d8c;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .source-link:hover {
+            text-decoration: underline;
+        }
+
+        .input-area {
+            background: transparent;
+            padding: 0 8vw 22px 8vw;
+            flex-shrink: 0;
+        }
+
+        .composer {
+            background: white;
+            border: 1px solid #e1e7f0;
+            border-radius: 22px;
+            padding: 12px 14px;
+            box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+        }
+
+        .question-input {
+            width: 100%;
+            resize: none;
+            min-height: 62px;
+            max-height: 180px;
+            padding: 8px 8px 4px 8px;
+            border: none;
+            outline: none;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #1f2933;
+        }
+
+        .question-input::placeholder {
+            color: #a0aec0;
+        }
+
+        .composer-status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 6px 8px 6px;
+            min-height: 28px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            max-width: 100%;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #eef4fb;
+            color: #1f5d8c;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .status-pill.file {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .status-pill.uploading {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-close {
+            border: none;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 0;
+        }
+
+        .composer-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #eef2f7;
+        }
+
+        .toolbar-left {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            border: 1px solid #b8c9ff;
+            color: #3264ff;
+            background: #f4f7ff;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        .tool-btn:hover {
+            background: #eaf0ff;
+        }
+
+        .tool-btn.active {
+            background: #3264ff;
+            border-color: #3264ff;
+            color: white;
+        }
+
+        .tool-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-btn {
+            width: 46px;
+            height: 46px;
+            border: none;
+            border-radius: 50%;
+            background: #3264ff;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover {
+            background: #244fdf;
+        }
+
+        .send-btn:disabled {
+            background: #aab8ff;
+            cursor: not-allowed;
+        }
+
+        .tips {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #718096;
+            padding-left: 4px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .loading {
+            color: #718096;
+            font-style: italic;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .chat-container {
+                padding: 24px 24px 24px 24px;
+            }
+
+            .input-area {
+                padding: 0 24px 18px 24px;
+            }
+
+            .message {
+                max-width: 88%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="authPage" class="auth-page">
+    <div class="auth-card">
+        <div class="auth-title">企业知识库智能问答</div>
+        <div class="auth-subtitle">
+            登录后可使用知识库问答、文件上传、联网搜索、历史会话和多轮对话功能。
+        </div>
+
+        <div class="auth-tabs">
+            <button id="loginTab" class="auth-tab active" onclick="switchAuthMode('login')">登录</button>
+            <button id="registerTab" class="auth-tab" onclick="switchAuthMode('register')">注册</button>
+        </div>
+
+        <div class="form-group">
+            <label>用户名</label>
+            <input id="authUsername" type="text" placeholder="请输入用户名">
+        </div>
+
+        <div class="form-group">
+            <label>密码</label>
+            <input id="authPassword" type="password" placeholder="请输入密码，至少 6 位">
+        </div>
+
+        <div id="nicknameGroup" class="form-group" style="display: none;">
+            <label>昵称</label>
+            <input id="authNickname" type="text" placeholder="请输入昵称，可不填">
+        </div>
+
+        <button id="authSubmitBtn" class="auth-btn" onclick="submitAuth()">登录</button>
+
+        <div id="authError" class="auth-error"></div>
+    </div>
+</div>
+
+<div id="appPage" class="page">
+    <aside class="sidebar">
+        <h1>知识库问答系统</h1>
+        <div class="subtitle">
+            企业知识库 RAG 智能问答助手
+        </div>
+
+        <div class="user-box">
+            当前用户：
+            <div id="currentUserText" class="user-name">未登录</div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <button class="new-chat-btn" onclick="newChat()">＋ 新建会话</button>
+
+        <div class="history-title">历史会话</div>
+        <div id="historyList" class="history-list">
+            <div class="empty-history">正在加载历史会话...</div>
+        </div>
+
+        <div class="sidebar-footer">
+            支持文档检索增强、联网搜索、历史会话恢复、引用来源展示。
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="header">
+            <div class="header-title">企业知识库智能问答</div>
+            <div class="header-desc">上传资料、联网搜索和提问都在底部输入框完成</div>
+        </div>
+
+        <div id="chatContainer" class="chat-container">
+            <div class="message-row assistant">
+                <div class="message assistant">
+                    你好，我是企业知识库智能问答助手。你可以直接提问，也可以在下方开启联网搜索或上传资料后再问。
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="composer">
+                <div id="composerStatus" class="composer-status"></div>
+
+                <textarea id="questionInput" class="question-input"
+                          placeholder="给 AI 发送消息，例如：这篇论文是否已经正式发表？"></textarea>
+
+                <div class="composer-toolbar">
+                    <div class="toolbar-left">
+                        <button id="webSearchToggleBtn" class="tool-btn" onclick="toggleWebSearch()">
+                            🌐 联网搜索
+                        </button>
+
+                        <button id="uploadToolBtn" class="tool-btn" onclick="document.getElementById('fileInput').click()">
+                            📎 上传资料
+                        </button>
+
+                        <input id="fileInput" class="file-input" type="file"
+                               accept=".txt,.md,.pdf,.docx,.png,.jpg,.jpeg,.bmp"
+                               onchange="handleFileSelectedAndUpload()">
+                    </div>
+
+                    <div class="toolbar-right">
+                        <button id="sendBtn" class="send-btn" onclick="sendQuestion()">↑</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips">Enter 发送，Ctrl + Enter 换行。若已指定上传文件，将优先回答文件内容；取消文件后才会使用联网搜索。</div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const DEFAULT_KNOWLEDGE_BASE_ID = 1;
+    const DEFAULT_TOP_K = 3;
+    const WEB_SEARCH_TOP_K = 20;
+
+    let authMode = "login";
+    let token = localStorage.getItem("auth_token") || "";
+    let currentUser = readCurrentUser();
+    let sessionId = "";
+
+    let latestUploadedFileId = "";
+    let latestUploadedFileName = "";
+    let webSearchEnabled = false;
+    let uploadWorking = false;
+
+    const authPage = document.getElementById("authPage");
+    const appPage = document.getElementById("appPage");
+    const loginTab = document.getElementById("loginTab");
+    const registerTab = document.getElementById("registerTab");
+    const nicknameGroup = document.getElementById("nicknameGroup");
+    const authSubmitBtn = document.getElementById("authSubmitBtn");
+    const authError = document.getElementById("authError");
+
+    const chatContainer = document.getElementById("chatContainer");
+    const questionInput = document.getElementById("questionInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const historyList = document.getElementById("historyList");
+    const currentUserText = document.getElementById("currentUserText");
+
+    const fileInput = document.getElementById("fileInput");
+    const composerStatus = document.getElementById("composerStatus");
+    const webSearchToggleBtn = document.getElementById("webSearchToggleBtn");
+    const uploadToolBtn = document.getElementById("uploadToolBtn");
+
+    init();
+
+    async function init() {
+        if (!token) {
+            showAuthPage();
+            return;
+        }
+
+        try {
+            const response = await authFetch("/api/auth/me");
+
+            if (!response.ok) {
+                clearLoginState();
+                showAuthPage();
+                return;
+            }
+
+            currentUser = await response.json();
+            saveCurrentUser(currentUser);
+            showAppPage();
+
+        } catch (e) {
+            clearLoginState();
+            showAuthPage();
+        }
+    }
+
+    function switchAuthMode(mode) {
+        authMode = mode;
+        authError.innerText = "";
+
+        if (mode === "login") {
+            loginTab.classList.add("active");
+            registerTab.classList.remove("active");
+            nicknameGroup.style.display = "none";
+            authSubmitBtn.innerText = "登录";
+        } else {
+            registerTab.classList.add("active");
+            loginTab.classList.remove("active");
+            nicknameGroup.style.display = "block";
+            authSubmitBtn.innerText = "注册并登录";
+        }
+    }
+
+    async function submitAuth() {
+        const username = document.getElementById("authUsername").value.trim();
+        const password = document.getElementById("authPassword").value;
+        const nickname = document.getElementById("authNickname").value.trim();
+
+        authError.innerText = "";
+
+        if (!username || !password) {
+            authError.innerText = "请输入用户名和密码。";
+            return;
+        }
+
+        try {
+            if (authMode === "register") {
+                const registerRes = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        nickname
+                    })
+                });
+
+                if (!registerRes.ok) {
+                    const error = await safeReadJson(registerRes);
+                    throw new Error(error.message || "注册失败");
+                }
+            }
+
+            const loginRes = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            });
+
+            if (!loginRes.ok) {
+                const error = await safeReadJson(loginRes);
+                throw new Error(error.message || "登录失败");
+            }
+
+            const loginData = await loginRes.json();
+
+            token = loginData.token;
+            currentUser = {
+                userId: loginData.userId,
+                username: loginData.username,
+                nickname: loginData.nickname
+            };
+
+            localStorage.setItem("auth_token", token);
+            saveCurrentUser(currentUser);
+
+            showAppPage();
+
+        } catch (e) {
+            authError.innerText = e.message;
+        }
+    }
+
+    function showAuthPage() {
+        authPage.style.display = "flex";
+        appPage.style.display = "none";
+    }
+
+    function showAppPage() {
+        authPage.style.display = "none";
+        appPage.style.display = "flex";
+
+        currentUserText.innerText = currentUser?.nickname || currentUser?.username || "已登录";
+
+        sessionId = localStorage.getItem(sessionStorageKey()) || "";
+        latestUploadedFileId = localStorage.getItem(uploadedFileIdStorageKey()) || "";
+        latestUploadedFileName = localStorage.getItem(uploadedFileNameStorageKey()) || "";
+        webSearchEnabled = localStorage.getItem(webSearchStorageKey()) === "true";
+
+        refreshToolState();
+        resetChatWelcome();
+        loadSessions();
+    }
+
+    async function logout() {
+        try {
+            if (token) {
+                await authFetch("/api/auth/logout", {
+                    method: "POST"
+                });
+            }
+        } catch (e) {
+        }
+
+        clearLoginState();
+        showAuthPage();
+    }
+
+    function clearLoginState() {
+        token = "";
+        currentUser = null;
+        sessionId = "";
+        latestUploadedFileId = "";
+        latestUploadedFileName = "";
+        webSearchEnabled = false;
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("current_user");
+    }
+
+    function saveCurrentUser(user) {
+        localStorage.setItem("current_user", JSON.stringify(user));
+    }
+
+    function readCurrentUser() {
+        try {
+            const text = localStorage.getItem("current_user");
+            return text ? JSON.parse(text) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function sessionStorageKey() {
+        if (!currentUser || !currentUser.userId) {
+            return "rag_session_id_guest";
+        }
+        return "rag_session_id_user_" + currentUser.userId;
+    }
+
+    function uploadedFileIdStorageKey() {
+        if (!currentUser || !currentUser.userId) {
+            return "latest_uploaded_file_id_guest";
+        }
+        return "latest_uploaded_file_id_user_" + currentUser.userId;
+    }
+
+    function uploadedFileNameStorageKey() {
+        if (!currentUser || !currentUser.userId) {
+            return "latest_uploaded_file_name_guest";
+        }
+        return "latest_uploaded_file_name_user_" + currentUser.userId;
+    }
+
+    function webSearchStorageKey() {
+        if (!currentUser || !currentUser.userId) {
+            return "web_search_enabled_guest";
+        }
+        return "web_search_enabled_user_" + currentUser.userId;
+    }
+
+    function authHeaders(extra = {}) {
+        return {
+            ...extra,
+            "Authorization": "Bearer " + token
+        };
+    }
+
+    function authFetch(url, options = {}) {
+        const headers = options.headers || {};
+        return fetch(url, {
+            ...options,
+            headers: authHeaders(headers)
+        });
+    }
+
+    async function safeReadJson(response) {
+        try {
+            return await response.json();
+        } catch (e) {
+            return {};
+        }
+    }
+
+    questionInput.addEventListener("keydown", function (event) {
+        if (event.isComposing) {
+            return;
+        }
+
+        if (event.key === "Enter" && event.ctrlKey) {
+            event.preventDefault();
+            insertNewLineAtCursor(questionInput);
+            return;
+        }
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+
+            if (!sendBtn.disabled) {
+                sendQuestion();
+            }
+        }
+    });
+
+    questionInput.addEventListener("input", function () {
+        questionInput.style.height = "auto";
+        questionInput.style.height = Math.min(questionInput.scrollHeight, 180) + "px";
+    });
+
+    function insertNewLineAtCursor(textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const value = textarea.value;
+
+        textarea.value = value.substring(0, start) + "\n" + value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + 1;
+    }
+
+    function newChat() {
+        sessionId = "";
+        localStorage.removeItem(sessionStorageKey());
+
+        resetChatNewSession();
+        renderActiveSession();
+        questionInput.focus();
+    }
+
+    function resetChatWelcome() {
+        chatContainer.innerHTML = `
+            <div class="message-row assistant">
+                <div class="message assistant">
+                    你好，我是企业知识库智能问答助手。你可以直接提问，也可以在下方开启联网搜索或上传资料后再问。
+                </div>
+            </div>
+        `;
+    }
+
+    function resetChatNewSession() {
+        chatContainer.innerHTML = `
+            <div class="message-row assistant">
+                <div class="message assistant">
+                    已开启新会话。你可以重新开始提问，也可以先上传资料或开启联网搜索。
+                </div>
+            </div>
+        `;
+    }
+
+    function toggleWebSearch() {
+        webSearchEnabled = !webSearchEnabled;
+        localStorage.setItem(webSearchStorageKey(), String(webSearchEnabled));
+        refreshToolState();
+    }
+
+    function refreshToolState() {
+        webSearchToggleBtn.classList.toggle("active", webSearchEnabled);
+        webSearchToggleBtn.innerText = webSearchEnabled ? "🌐 联网搜索已开" : "🌐 联网搜索";
+        uploadToolBtn.disabled = uploadWorking;
+        sendBtn.disabled = uploadWorking;
+        renderComposerStatus();
+    }
+
+    function renderComposerStatus() {
+        composerStatus.innerHTML = "";
+
+        if (uploadWorking) {
+            const pill = document.createElement("div");
+            pill.className = "status-pill uploading";
+            pill.innerText = "正在上传并解析文件...";
+            composerStatus.appendChild(pill);
+            return;
+        }
+
+        if (latestUploadedFileId) {
+            const pill = document.createElement("div");
+            pill.className = "status-pill file";
+
+            const text = document.createElement("span");
+            text.innerText = "当前文件：" + (latestUploadedFileName || ("文件 ID " + latestUploadedFileId));
+
+            const close = document.createElement("button");
+            close.className = "status-close";
+            close.innerText = "×";
+            close.title = "取消当前文件";
+            close.onclick = clearCurrentFile;
+
+            pill.appendChild(text);
+            pill.appendChild(close);
+            composerStatus.appendChild(pill);
+
+            const tip = document.createElement("div");
+            tip.className = "status-pill";
+            tip.innerText = "将优先回答该文件内容";
+            composerStatus.appendChild(tip);
+            return;
+        }
+
+        if (webSearchEnabled) {
+            const pill = document.createElement("div");
+            pill.className = "status-pill";
+            pill.innerText = "联网搜索已开启";
+            composerStatus.appendChild(pill);
+        }
+    }
+
+    function clearCurrentFile() {
+        latestUploadedFileId = "";
+        latestUploadedFileName = "";
+
+        localStorage.removeItem(uploadedFileIdStorageKey());
+        localStorage.removeItem(uploadedFileNameStorageKey());
+
+        renderComposerStatus();
+
+        appendMessage(
+            "assistant",
+            "已取消当前指定文件。后续问题将默认从全部知识库中检索；若开启联网搜索，则会联网搜索。"
+        );
+    }
+
+    async function handleFileSelectedAndUpload() {
+        const file = fileInput.files && fileInput.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        await uploadSelectedFile(file);
+
+        fileInput.value = "";
+    }
+
+    async function uploadSelectedFile(file) {
+        if (!file) {
+            return;
+        }
+
+        if (!token) {
+            showAuthPage();
+            return;
+        }
+
+        uploadWorking = true;
+        refreshToolState();
+
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch(`/api/files/upload?knowledgeBaseId=${DEFAULT_KNOWLEDGE_BASE_ID}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+                body: formData
+            });
+
+            if (response.status === 401) {
+                clearLoginState();
+                showAuthPage();
+                return;
+            }
+
+            const data = await safeReadJson(response);
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || "上传失败，状态码：" + response.status);
+            }
+
+            if (data.fileId) {
+                latestUploadedFileId = String(data.fileId);
+                latestUploadedFileName = data.filename || file.name;
+
+                localStorage.setItem(uploadedFileIdStorageKey(), latestUploadedFileId);
+                localStorage.setItem(uploadedFileNameStorageKey(), latestUploadedFileName);
+            }
+
+            appendMessage(
+                "assistant",
+                `文件“${data.filename || file.name}”已加入知识库，并已设为当前问答文件。你可以直接问：总结一下这个文件。`
+            );
+
+        } catch (e) {
+            appendMessage("assistant", "上传失败：" + e.message);
+        } finally {
+            uploadWorking = false;
+            refreshToolState();
+        }
+    }
+
+    async function loadSessions() {
+        try {
+            const response = await authFetch("/api/sessions");
+
+            if (response.status === 401) {
+                clearLoginState();
+                showAuthPage();
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error("加载历史会话失败：" + response.status);
+            }
+
+            const sessions = await response.json();
+            renderSessions(sessions || []);
+
+        } catch (error) {
+            historyList.innerHTML = `<div class="empty-history">${error.message}</div>`;
+        }
+    }
+
+    function renderSessions(sessions) {
+        if (!sessions || sessions.length === 0) {
+            historyList.innerHTML = `<div class="empty-history">暂无历史会话。</div>`;
+            return;
+        }
+
+        historyList.innerHTML = "";
+
+        sessions.forEach(session => {
+            const item = document.createElement("div");
+            item.className = "session-item";
+            item.dataset.sessionId = session.sessionId;
+
+            if (session.sessionId === sessionId) {
+                item.classList.add("active");
+            }
+
+            const title = document.createElement("div");
+            title.className = "session-title";
+            title.innerText = session.title || "未命名会话";
+
+            const meta = document.createElement("div");
+            meta.className = "session-meta";
+            meta.innerText = `${session.messageCount || 0} 条消息 · ${formatTime(session.updateTime)}`;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-session";
+            deleteBtn.innerText = "×";
+            deleteBtn.title = "删除会话";
+            deleteBtn.onclick = function (event) {
+                event.stopPropagation();
+                deleteSession(session.sessionId);
+            };
+
+            item.appendChild(title);
+            item.appendChild(meta);
+            item.appendChild(deleteBtn);
+
+            item.onclick = function () {
+                openSession(session.sessionId);
+            };
+
+            historyList.appendChild(item);
+        });
+    }
+
+    function renderActiveSession() {
+        const items = document.querySelectorAll(".session-item");
+        items.forEach(item => {
+            if (item.dataset.sessionId === sessionId) {
+                item.classList.add("active");
+            } else {
+                item.classList.remove("active");
+            }
+        });
+    }
+
+    async function openSession(targetSessionId) {
+        if (!targetSessionId) {
+            return;
+        }
+
+        try {
+            const response = await authFetch(`/api/sessions/${encodeURIComponent(targetSessionId)}/messages`);
+
+            if (response.status === 401) {
+                clearLoginState();
+                showAuthPage();
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error("加载会话消息失败：" + response.status);
+            }
+
+            const messages = await response.json();
+
+            sessionId = targetSessionId;
+            localStorage.setItem(sessionStorageKey(), sessionId);
+            renderActiveSession();
+
+            chatContainer.innerHTML = "";
+
+            if (!messages || messages.length === 0) {
+                appendMessage("assistant", "该会话暂无消息。");
+                return;
+            }
+
+            messages.forEach(message => {
+                const role = message.role === "USER" ? "user" : "assistant";
+                appendMessage(role, message.content || "");
+            });
+
+            scrollToBottom();
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function deleteSession(targetSessionId) {
+        if (!targetSessionId) {
+            return;
+        }
+
+        const ok = confirm("确定要删除这个会话吗？删除后无法恢复。");
+        if (!ok) {
+            return;
+        }
+
+        try {
+            const response = await authFetch(`/api/sessions/${encodeURIComponent(targetSessionId)}`, {
+                method: "DELETE"
+            });
+
+            if (response.status === 401) {
+                clearLoginState();
+                showAuthPage();
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error("删除会话失败：" + response.status);
+            }
+
+            if (targetSessionId === sessionId) {
+                newChat();
+            }
+
+            await loadSessions();
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+
+        if (!question) {
+            alert("请输入问题");
+            return;
+        }
+
+        appendMessage("user", question);
+        questionInput.value = "";
+        questionInput.style.height = "auto";
+        sendBtn.disabled = true;
+
+        const streaming = appendStreamingAssistantMessage();
+
+        try {
+            const params = new URLSearchParams();
+            params.append("knowledgeBaseId", DEFAULT_KNOWLEDGE_BASE_ID);
+            params.append("question", question);
+            params.append("topK", webSearchEnabled ? WEB_SEARCH_TOP_K : DEFAULT_TOP_K);
+
+            if (sessionId) {
+                params.append("sessionId", sessionId);
+            }
+
+            if (latestUploadedFileId) {
+                params.append("uploadedFileId", latestUploadedFileId);
+            }
+
+            if (webSearchEnabled) {
+                params.append("webSearch", "true");
+            }
+
+            const response = await authFetch(`/api/rag/ask/stream?${params.toString()}`);
+
+            if (response.status === 401) {
+                clearLoginState();
+                showAuthPage();
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error("请求失败，状态码：" + response.status);
+            }
+
+            await readNdjsonStream(response, streaming);
+
+            await loadSessions();
+            renderActiveSession();
+
+        } catch (error) {
+            streaming.answerDiv.innerText = "请求失败：" + error.message;
+            streaming.answerDiv.classList.remove("loading");
+        } finally {
+            sendBtn.disabled = false;
+            questionInput.focus();
+        }
+    }
+
+    function appendStreamingAssistantMessage() {
+        const row = document.createElement("div");
+        row.className = "message-row assistant";
+
+        const msg = document.createElement("div");
+        msg.className = "message assistant";
+
+        const answerDiv = document.createElement("div");
+        answerDiv.className = "loading";
+        answerDiv.innerText = "正在思考中...";
+
+        msg.appendChild(answerDiv);
+        row.appendChild(msg);
+        chatContainer.appendChild(row);
+        scrollToBottom();
+
+        return {
+            row,
+            msg,
+            answerDiv,
+            hasContent: false
+        };
+    }
+
+    async function readNdjsonStream(response, streaming) {
+        if (!response.body) {
+            streaming.answerDiv.innerText = "当前浏览器不支持流式读取。";
+            streaming.answerDiv.classList.remove("loading");
+            return;
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+
+        let buffer = "";
+
+        while (true) {
+            const { value, done } = await reader.read();
+
+            if (done) {
+                break;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+
+            const lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+
+                if (!trimmed) {
+                    continue;
+                }
+
+                handleStreamEvent(trimmed, streaming);
+            }
+        }
+
+        if (buffer.trim()) {
+            handleStreamEvent(buffer.trim(), streaming);
+        }
+    }
+
+    function handleStreamEvent(line, streaming) {
+        let event;
+
+        try {
+            event = JSON.parse(line);
+        } catch (e) {
+            return;
+        }
+
+        const type = event.type;
+        const data = event.data;
+
+        if (type === "sessionId") {
+            if (data) {
+                sessionId = data;
+                localStorage.setItem(sessionStorageKey(), sessionId);
+            }
+            return;
+        }
+
+        if (type === "delta") {
+            if (!streaming.hasContent) {
+                streaming.answerDiv.innerText = "";
+                streaming.answerDiv.classList.remove("loading");
+                streaming.hasContent = true;
+            }
+
+            streaming.answerDiv.innerText += data || "";
+            scrollToBottom();
+            return;
+        }
+
+        if (type === "sources") {
+            renderCollapsibleSources(streaming.msg, data || []);
+            scrollToBottom();
+            return;
+        }
+
+        if (type === "error") {
+            streaming.answerDiv.innerText = data || "流式问答失败。";
+            streaming.answerDiv.classList.remove("loading");
+            scrollToBottom();
+            return;
+        }
+
+        if (type === "done") {
+            return;
+        }
+    }
+
+    function appendMessage(role, text) {
+        const row = document.createElement("div");
+        row.className = "message-row " + role;
+
+        const msg = document.createElement("div");
+        msg.className = "message " + role;
+        msg.innerText = text;
+
+        row.appendChild(msg);
+        chatContainer.appendChild(row);
+        scrollToBottom();
+    }
+
+    function renderCollapsibleSources(msg, sources) {
+        if (!sources || sources.length === 0) {
+            return;
+        }
+
+        const toggle = document.createElement("button");
+        toggle.className = "source-toggle";
+        toggle.innerText = `▶ 引用来源（${sources.length} 条，点击展开）`;
+
+        const sourceBox = document.createElement("div");
+        sourceBox.className = "source-box";
+
+        sources.forEach((source, index) => {
+            const item = document.createElement("div");
+            item.className = "source-content";
+
+            if (source.url) {
+                const link = document.createElement("a");
+                link.className = "source-link";
+                link.href = source.url;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.innerText = `【网页来源 ${index + 1}】${source.title || source.url}`;
+
+                const meta = document.createElement("div");
+                const score = source.score !== undefined && source.score !== null
+                    ? Number(source.score).toFixed(4)
+                    : "未知";
+
+                meta.innerText =
+                    `链接：${source.url}\n` +
+                    `相关性分数：${score}` +
+                    (source.publishedDate ? `\n发布时间：${source.publishedDate}` : "") +
+                    `\n\n${source.content || ""}`;
+
+                item.appendChild(link);
+                item.appendChild(meta);
+
+            } else {
+                const distance = source.distance !== undefined && source.distance !== null
+                    ? Number(source.distance).toFixed(4)
+                    : "未知";
+
+                item.innerText =
+                    `【知识片段 ${index + 1}】距离：${distance}\n` +
+                    `${source.content || ""}`;
+            }
+
+            sourceBox.appendChild(item);
+        });
+
+        toggle.onclick = function () {
+            const expanded = sourceBox.classList.toggle("expanded");
+            toggle.innerText = expanded
+                ? `▼ 引用来源（${sources.length} 条，点击收起）`
+                : `▶ 引用来源（${sources.length} 条，点击展开）`;
+        };
+
+        msg.appendChild(toggle);
+        msg.appendChild(sourceBox);
+    }
+
+    function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function formatTime(timeText) {
+        if (!timeText) {
+            return "";
+        }
+
+        try {
+            const date = new Date(timeText);
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            const hour = String(date.getHours()).padStart(2, "0");
+            const minute = String(date.getMinutes()).padStart(2, "0");
+            return `${month}-${day} ${hour}:${minute}`;
+        } catch (e) {
+            return timeText;
+        }
+    }
+
+    function formatFileSize(size) {
+        if (!size && size !== 0) {
+            return "";
+        }
+
+        if (size < 1024) {
+            return size + " B";
+        }
+
+        if (size < 1024 * 1024) {
+            return (size / 1024).toFixed(1) + " KB";
+        }
+
+        return (size / 1024 / 1024).toFixed(2) + " MB";
+    }
+</script>
+</body>
+</html>
